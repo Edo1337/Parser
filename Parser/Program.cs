@@ -1,31 +1,34 @@
 ﻿using HtmlAgilityPack;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
 
 class Program
 {
+    private static void PrintQuestions(List<string> questions)
+    {
+        for (int i = 0; i < questions.Count; i++)
+        {
+            Console.WriteLine(i + ". " + questions[i]);
+        }
+    }
+
     static async Task Main(string[] args)
     {
-        string url = "https://easyoffer.ru/rating/c_sharp_developer?page=1";
+        string url = "https://easyoffer.ru/rating/c_sharp_developer?page=3";
 
-        HttpClient client = new HttpClient();
-        string html = await client.GetStringAsync(url);
-
-        HtmlDocument doc = new HtmlDocument();
-        doc.LoadHtml(html);
-
-        List<string> questions = new List<string>();
-
-        foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//table/tbody/tr/td/a"))
+        using (var client = new HttpClient())
         {
-            questions.Add(node.InnerText);
-        }
+            string html = await client.GetStringAsync(url);
 
-        foreach (string question in questions)
-        {
-            Console.WriteLine(question);
+            var doc = new HtmlDocument();
+            doc.LoadHtml(html);
+
+            var questions = new List<string>();
+
+            foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//table/tbody/tr/td/a"))
+            {
+                questions.Add(node.InnerText);
+            }
+            questions.Sort();
+            PrintQuestions(questions);
         }
     }
 }
